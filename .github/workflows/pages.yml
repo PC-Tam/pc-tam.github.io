@@ -1,0 +1,81 @@
+name: Publish portfolio to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check out portfolio
+        uses: actions/checkout@v6
+
+      - name: Import the prepared source archive on first publication
+        if: hashFiles('portfolio-source.zip') != ''
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path, PurePosixPath
+          import zipfile
+          root = Path.cwd().resolve()
+          allowed = {'public', 'src', 'scripts', 'tests', 'worker', '.openai', 'index.html', 'package.json', 'package-lock.json', 'vite.config.mjs', '.gitignore', 'AGENTS.md', 'README.md'}
+          with zipfile.ZipFile('portfolio-source.zip') as archive:
+              for item in archive.infolist():
+                  name = PurePosixPath(item.filename)
+                  if name.is_absolute() or '..' in name.parts or not name.parts or name.parts[0] not in allowed:
+                      raise ValueError('Unexpected archive path: ' + item.filename)
+                  target = (root / item.filename).resolve()
+                  if not target.is_relative_to(root):
+                      raise ValueError('Archive path escapes repository')
+              archive.extractall(root)
+          readme = root / 'README.md'
+          text = readme.read_text(encoding='utf-8')
+          text = text.replace('Commit the source changes and the generated `docs/` directory, then push to `main`. GitHub Pages publishes from `main /docs`.', 'Push your source changes to `main`. The GitHub Actions workflow builds and publishes `docs/` automatically. GitHub Pages uses **GitHub Actions** as its publishing source.')
+          readme.write_text(text, encoding='utf-8')
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm portfolio-source.zip
+          git add public src scripts tests worker .openai index.html package.json package-lock.json vite.config.mjs .gitignore AGENTS.md README.md
+          git commit -m "Import portfolio 4173 source and assets"
+          git push origin HEAD:main
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Build the public portfolio
+        run: npm run publish:prepare
+
+      - name: Verify static packaging
+        run: npm run test:sites
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload website
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: docs
+
+      - name: Deploy website
+        id: deployment
+        uses: actions/deploy-pages@v4
