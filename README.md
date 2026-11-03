@@ -19,7 +19,7 @@ npm run dev -- --host 127.0.0.1 --port 4173
 npm run publish:prepare
 ```
 
-Commit the source changes and the generated `docs/` directory, then push to `main`. GitHub Pages publishes from `main /docs`.
+Push your source changes to `main`. The GitHub Actions workflow builds and publishes `docs/` automatically. GitHub Pages uses **GitHub Actions** as its publishing source.
 
 ## Source and content boundaries
 

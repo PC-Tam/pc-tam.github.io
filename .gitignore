@@ -1,0 +1,8 @@
+node_modules/
+dist/
+qa/
+.personalization-backup/
+.env
+.env.*
+!.env.example
+*.log

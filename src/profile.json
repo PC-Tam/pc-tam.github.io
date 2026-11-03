@@ -1,0 +1,25 @@
+{
+  "name": "Phùng Chí Tâm",
+  "shortRole": "CS Student",
+  "title": "Computer Science Student",
+  "email": "pct2k5@gmail.com",
+  "phone": "+84941068390",
+  "location": "Ho Chi Minh City, Vietnam",
+  "github": "https://github.com/PC-Tam",
+  "education": "University of Economics Ho Chi Minh City (UEH), Bachelor of Computer Science (in progress), 2023–Present; final-year student.",
+  "currentFocus": "Rebuilding Python programming, SQL and Git fundamentals through guided practice.",
+  "languages": "Vietnamese (native); English (technical reading).",
+  "cv": "/CV_Phung_Chi_Tam.pdf",
+  "social": {
+    "linkedin": "https://www.linkedin.com/",
+    "twitter": "https://x.com/",
+    "facebook": "https://www.facebook.com/",
+    "instagram": "https://www.instagram.com/"
+  },
+  "preservedSampleSections": [
+    "Original project cards",
+    "Original work-history timeline",
+    "Chess engine and ELO 3640"
+  ],
+  "provenance": "Personal data from the supplied CV. Work history, project placeholders and chess ELO are retained reference content by explicit user instruction; they are not verified personal credentials."
+}
